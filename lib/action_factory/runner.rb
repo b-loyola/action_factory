@@ -20,8 +20,8 @@ module ActionFactory
       @factory = factory_class.new(*traits, **attributes)
     end
 
-    def run
-      @factory.run(@strategy)
+    def run(strategy = nil)
+      @factory.run(strategy || @strategy)
     end
   end
 end

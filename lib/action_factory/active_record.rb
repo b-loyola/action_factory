@@ -6,7 +6,6 @@ module ActionFactory
   module ActiveRecord
 
     class Association
-
       def initialize(strategy:, factory_name:, traits:, block:)
         @strategy = strategy
         @factory_name = factory_name
@@ -14,8 +13,8 @@ module ActionFactory
         @block = block
       end
 
-      def generate
-        @block ? @block.call(@runner) : @runner.run
+      def generate(strategy)
+        @block ? @block.call(@runner) : @runner.run(strategy)
       end
 
       def runner
@@ -44,7 +43,7 @@ module ActionFactory
 
     def build_associations
       self.class.associations.except(*@attributes.keys).each do |name, association|
-        associated_record = association.generate
+        associated_record = association.generate(@strategy)
         @instance.association(name).writer(associated_record)
       end
     end

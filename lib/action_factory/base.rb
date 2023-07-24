@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "action_factory/attribute_compiler"
+require "action_factory/assignment_compiler"
 require "action_factory/attribute_assigner"
 require "action_factory/assignments"
 
@@ -45,15 +45,15 @@ module ActionFactory
       end
 
       def attribute(name, &block)
-        assignments[name] = ActionFactory::Assignments::Attribute.new(name, block)
+        assignments[:attributes][name] = ActionFactory::Assignments::Attribute.new(name, block)
       end
 
       def sequence(name, &block)
-        assignments[name] = ActionFactory::Assignments::Sequence.new(name, block)
+        assignments[:attributes][name] = ActionFactory::Assignments::Sequence.new(name, block)
       end
 
       def trait(name, &block)
-        assignments[name] = ActionFactory::Assignments::Trait.new(name, block)
+        assignments[:traits][name] = ActionFactory::Assignments::Trait.new(name, block)
       end
 
       def assignments
@@ -61,7 +61,7 @@ module ActionFactory
           if self.superclass.respond_to?(:assignments)
             self.superclass.assignments.deep_dup
           else
-            {}.with_indifferent_access
+            ActiveSupport::HashWithIndifferentAccess.new { |hash, key| hash[key] = {}.with_indifferent_access }
           end
         end
       end
@@ -69,7 +69,7 @@ module ActionFactory
 
     delegate :initializer, :creator, :klass, :assignments, to: :class
 
-    attr_reader :traits, :attributes
+    attr_reader :traits, :attributes, :instance
 
     def initialize(*traits, **attributes)
       @traits = traits
@@ -86,7 +86,7 @@ module ActionFactory
       run_callbacks :assign_attributes do
         assign_attributes
       end
-      @instance
+      instance
     end
 
     def create
@@ -94,7 +94,11 @@ module ActionFactory
       run_callbacks :create do
         persist_instance
       end
-      @instance
+      instance
+    end
+
+    def factory_attributes
+      @factory_attributes ||= AssignmentCompiler.new(assignments[:attributes]).compile(factory: self, except: @attributes.keys)
     end
 
     private
@@ -118,12 +122,13 @@ module ActionFactory
     end
 
     def assign_attributes
-      assigner = AttributeAssigner.new(@instance)
-      assigner.assign(@attributes)
-      attributes = AttributeCompiler.new(assignments, @traits, @attributes.keys).compile(self)
-      assigner.assign(attributes)
+      attribute_assigner.assign(@attributes)
+      attribute_assigner.assign(factory_attributes)
+      TraitCompiler.new(assignments[:traits]).compile(factory: self, only: @traits)
+    end
 
-      @attributes.reverse_merge!(attributes)
+    def attribute_assigner
+      @attribute_assigner ||= AttributeAssigner.new(instance)
     end
   end
 end
