@@ -98,7 +98,7 @@ module ActionFactory
     end
 
     def factory_attributes
-      @factory_attributes ||= AssignmentCompiler.new(assignments[:attributes]).compile(factory: self, except: @attributes.keys)
+      @factory_attributes ||= assignment_compiler.compile(assignments[:attributes], except: @attributes.keys)
     end
 
     private
@@ -124,7 +124,11 @@ module ActionFactory
     def assign_attributes
       attribute_assigner.assign(@attributes)
       attribute_assigner.assign(factory_attributes)
-      TraitCompiler.new(assignments[:traits]).compile(factory: self, only: @traits)
+      assignment_compiler.compile(assignments[:traits], only: @traits)
+    end
+
+    def assignment_compiler
+      @assignment_compiler ||= AssignmentCompiler.new(self)
     end
 
     def attribute_assigner
