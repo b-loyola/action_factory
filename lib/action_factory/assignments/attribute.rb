@@ -3,13 +3,12 @@
 module ActionFactory
   module Assignments
     class Attribute
-      def initialize(name, block)
-        @name = name
+      def initialize(block)
         @block = block
       end
 
       def compile(factory)
-        [[], @block]
+        factory.instance_exec(&@block)
       end
     end
   end

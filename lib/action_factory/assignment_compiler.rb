@@ -9,8 +9,7 @@ module ActionFactory
 
     def compile(assignments, only: assignments.keys, except: [])
       assignments.slice(*only).except(*except).transform_values do |assignment|
-        args, block = assignment.compile(@factory)
-        @factory.instance_exec(*args, &block)
+        assignment.compile(@factory)
       end
     end
 

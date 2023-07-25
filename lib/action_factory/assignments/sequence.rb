@@ -3,15 +3,14 @@
 module ActionFactory
   module Assignments
     class Sequence
-      def initialize(name, block)
-        @name = name
+      def initialize(block)
         @count = 0
         @block = block
       end
 
       def compile(factory)
-        @count += 1
-        [[@count], @block]
+        # @count += 1
+        factory.instance_exec(@count += 1, &@block)
       end
     end
   end

@@ -3,13 +3,12 @@
 module ActionFactory
   module Assignments
     class Trait
-      def initialize(name, block)
-        @name = name
+      def initialize(block)
         @block = block
       end
 
       def compile(factory)
-        [[factory.instance], @block]
+        factory.instance_exec(factory.instance, &@block)
       end
     end
   end

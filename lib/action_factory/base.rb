@@ -45,15 +45,15 @@ module ActionFactory
       end
 
       def attribute(name, &block)
-        assignments[:attributes][name] = ActionFactory::Assignments::Attribute.new(name, block)
+        assignments[:attributes][name] = ActionFactory::Assignments::Attribute.new(block)
       end
 
       def sequence(name, &block)
-        assignments[:attributes][name] = ActionFactory::Assignments::Sequence.new(name, block)
+        assignments[:attributes][name] = ActionFactory::Assignments::Sequence.new(block)
       end
 
       def trait(name, &block)
-        assignments[:traits][name] = ActionFactory::Assignments::Trait.new(name, block)
+        assignments[:traits][name] = ActionFactory::Assignments::Trait.new(block)
       end
 
       def assignments
