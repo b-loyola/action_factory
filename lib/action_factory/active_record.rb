@@ -14,7 +14,7 @@ module ActionFactory
       end
 
       def generate(strategy)
-        @block ? @block.call(@runner) : @runner.run(strategy)
+        @block ? @block.call(runner) : runner.run(strategy)
       end
 
       def runner
