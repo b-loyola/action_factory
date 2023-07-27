@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    action_factory (0.1.1)
+    action_factory (0.1.2)
       activemodel (~> 7.0, >= 7.0.6)
       activesupport (~> 7.0, >= 7.0.6)
 

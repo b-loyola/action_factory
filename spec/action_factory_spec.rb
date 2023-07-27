@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe ActionFactory do
   it "has a version number" do
-    expect(ActionFactory::VERSION).to eq "0.1.1"
+    expect(ActionFactory::VERSION).to eq "0.1.2"
   end
 
   describe ".configuration" do
