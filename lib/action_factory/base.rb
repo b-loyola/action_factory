@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require "active_support/core_ext/hash/indifferent_access"
+require "active_support/core_ext/module/delegation"
+require "active_support/core_ext/object/deep_dup"
+
+require "active_model/callbacks"
+
 require "action_factory/assignment_compiler"
 require "action_factory/attribute_assigner"
 require "action_factory/assignments"

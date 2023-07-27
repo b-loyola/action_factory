@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "active_support/core_ext/module/delegation"
+
 require "action_factory/factory_finder"
 
 module ActionFactory

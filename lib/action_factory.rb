@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "active_support"
+
 require "action_factory/version"
 require "action_factory/helpers"
 require "action_factory/base"
