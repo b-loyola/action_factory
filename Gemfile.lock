@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     action_factory (0.1.0)
-      activemodel (>= 7.0.6)
-      activesupport (>= 7.0.6)
+      activemodel (~> 7.0, >= 7.0.6)
+      activesupport (~> 7.0, >= 7.0.6)
 
 GEM
   remote: https://rubygems.org/
@@ -49,8 +49,8 @@ PLATFORMS
 
 DEPENDENCIES
   action_factory!
-  debug
-  rspec
+  debug (~> 1.8)
+  rspec (~> 3.12)
 
 BUNDLED WITH
    2.4.15

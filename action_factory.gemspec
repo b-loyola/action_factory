@@ -9,6 +9,10 @@ Gem::Specification.new do |spec|
   spec.summary     = "A Simple OOO Factory lib for Ruby (and Rails)"
   spec.description = "Your factories are now classes."
 
+  spec.required_ruby_version = ">= 3.2.2"
+
+  spec.license = "MIT"
+
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   spec.metadata["allowed_push_host"] = "https://github.com/b-loyola/action_factory"
@@ -20,10 +24,10 @@ Gem::Specification.new do |spec|
     Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   end
 
-  spec.add_dependency "activesupport", ">= 7.0.6"
-  spec.add_dependency "activemodel", ">= 7.0.6"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "debug"
+  spec.add_runtime_dependency 'activesupport', '~> 7.0', '>= 7.0.6'
+  spec.add_runtime_dependency 'activemodel', '~> 7.0', '>= 7.0.6'
+  spec.add_development_dependency 'rspec', '~> 3.12'
+  spec.add_development_dependency 'debug', '~> 1.8'
 
   spec.test_files = Dir["spec/**/*"]
 end
