@@ -17,7 +17,7 @@ module ActionFactory
     end
 
     def factory_class
-      factory_class_name = Registry.factory_class_name(@name)
+      factory_class_name = Registry.factory_class_name_for(@name)
       factory_class_name.constantize
     rescue NameError
       raise FactoryNotFound, "Factory with class name #{factory_class_name.inspect} not found"

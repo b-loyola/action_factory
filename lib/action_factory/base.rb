@@ -22,22 +22,22 @@ module ActionFactory
     class << self
       attr_reader :initializer, :creator
 
-      def factory(name)
-        Registry.register(name, self.name)
+      def register(factory_name: nil, class_name: nil)
+        raise ArgumentError, 'factory_name or class_name required' unless factory_name || class_name
+
+        Registry.register(factory_class_name: self.name, factory_name: factory_name, class_name: class_name)
       end
 
-      def class_name(name)
-        @klass_name = name
-      end
-
-      def klass_name
-        @klass_name ||= name.delete_suffix('Factory')
+      def class_name
+        Registry.class_name_for(self.name)
       end
 
       def klass
-        @klass ||= klass_name.constantize
+        @klass ||= class_name.constantize
       rescue NameError
-        raise ClassNotFound, "Class with name #{class_name.inspect} not found"
+        message = "Class with name #{class_name.inspect} not found, " \
+                  "please use `register` if you need to configure a custom class name"
+        raise ClassNotFound, message
       end
 
       def to_initialize(&block)
@@ -75,12 +75,13 @@ module ActionFactory
 
     delegate :initializer, :creator, :klass, :assignments, to: :class
 
-    attr_reader :traits, :attributes, :instance
+    attr_reader :traits, :attributes
 
     def initialize(*traits, **attributes)
+      raise "cannot initialize base class" if self.class == ActionFactory::Base
+
       @traits = traits
       @attributes = attributes
-      @instance = build_instance_with_callbacks
     end
 
     def run(strategy)
@@ -107,6 +108,10 @@ module ActionFactory
       @factory_attributes ||= assignment_compiler.compile(assignments[:attributes], except: @attributes.keys)
     end
 
+    def instance
+      @instance ||= build_instance_with_callbacks
+    end
+
     private
 
     def build_instance_with_callbacks
@@ -122,9 +127,9 @@ module ActionFactory
     end
 
     def persist_instance
-      return @instance.instance_exec(self, &creator) if creator
+      return instance.instance_exec(self, &creator) if creator
 
-      @instance.public_send(ActionFactory.configuration.persist_method)
+      instance.public_send(ActionFactory.configuration.persist_method)
     end
 
     def assign_attributes

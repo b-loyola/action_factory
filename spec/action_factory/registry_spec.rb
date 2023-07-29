@@ -2,44 +2,152 @@ require "spec_helper"
 
 RSpec.describe ActionFactory::Registry do
   let(:factory_name) { :user }
-  let(:model_name) { "CustomUser" }
+  let(:default_class_name) { "User" }
+  let(:custom_class_name) { "CustomUser" }
   let(:default_factory_class_name) { "UserFactory" }
-  let(:expected_factory_class_name) { "CustomUserFactory" }
+  let(:custom_factory_class_name) { "SomeCustomUserFactory" }
+
+  after do
+    described_class.clear
+  end
 
   describe ".register" do
-    subject(:register) { described_class.register(factory_name, model_name) }
+    subject(:register) do
+      described_class.register(
+        factory_class_name: custom_factory_class_name,
+        factory_name: factory_name,
+        class_name: custom_class_name
+      )
+    end
 
     it "registers the factory class name for the given factory name" do
       expect { register }.to(
-        change { described_class.factory_class_name(factory_name) }.from(
+        change { described_class.factory_class_name_for(factory_name) }.from(
           default_factory_class_name
         ).to(
-          expected_factory_class_name
+          custom_factory_class_name
         )
       )
     end
   end
 
-  describe ".factories" do
-    subject { described_class.factories }
+  describe ".factory_class_name_for" do
+    subject(:factory_class_name_for) { described_class.factory_class_name_for(name) }
 
-    it { is_expected.to be_a(Hash) }
+    context "when the name is registered" do
+      before do
+        described_class.register(
+          factory_class_name: custom_factory_class_name,
+          factory_name: factory_name,
+          class_name: custom_class_name
+        )
+      end
 
-    it "returns a hash with default values" do
-      expect(subject.default_proc).to be_a(Proc)
-      expect(subject[:foo]).to eq("Foo")
+      context "when the name is a symbol" do
+        let(:name) { factory_name }
+
+        it { is_expected.to eq(custom_factory_class_name) }
+      end
+
+      context "when the name is a string" do
+        let(:name) { custom_class_name }
+
+        it { is_expected.to eq(custom_factory_class_name) }
+      end
+
+      context "when the name is a class" do
+        let(:name) { custom_class_name.constantize }
+
+        before do
+          stub_const(custom_class_name, Class.new)
+        end
+
+        it { is_expected.to eq(custom_factory_class_name) }
+      end
+    end
+
+    context "when the name is not registered" do
+      context "when the name is a symbol" do
+        let(:name) { factory_name }
+
+        it { is_expected.to eq(default_factory_class_name) }
+      end
+
+      context "when the name is a string" do
+        let(:name) { default_class_name }
+
+        it { is_expected.to eq(default_factory_class_name) }
+      end
+
+      context "when the name is a class" do
+        let(:name) { default_class_name.constantize }
+
+        before do
+          stub_const(default_class_name, Class.new)
+        end
+
+        it { is_expected.to eq(default_factory_class_name) }
+      end
     end
   end
 
-  describe ".factory_class_name" do
-    before do
-      described_class.register(factory_name, model_name)
+  describe ".class_name_for" do
+    subject(:class_name_for) { described_class.class_name_for(name) }
+
+    context "when the name is registered" do
+      before do
+        described_class.register(
+          factory_class_name: custom_factory_class_name,
+          factory_name: factory_name,
+          class_name: custom_class_name
+        )
+      end
+
+      context "when the name is a symbol" do
+        let(:name) { factory_name }
+
+        it { is_expected.to eq(custom_class_name) }
+      end
+
+      context "when the name is a string" do
+        let(:name) { custom_factory_class_name }
+
+        it { is_expected.to eq(custom_class_name) }
+      end
+
+      context "when the name is a class" do
+        let(:name) { custom_factory_class_name.constantize }
+
+        before do
+          stub_const(custom_factory_class_name, Class.new)
+        end
+
+        it { is_expected.to eq(custom_class_name) }
+      end
     end
 
-    subject(:factory_class_name) { described_class.factory_class_name(factory_name) }
+    context "when the name is not registered" do
+      context "when the name is a symbol" do
+        let(:name) { factory_name }
 
-    it "returns the factory class name for the given factory name" do
-      expect(factory_class_name).to eq(expected_factory_class_name)
+        it { is_expected.to eq(default_class_name) }
+      end
+
+      context "when the name is a string" do
+        let(:name) { default_factory_class_name }
+
+        it { is_expected.to eq(default_class_name) }
+      end
+
+      context "when the name is a class" do
+        let(:name) { default_factory_class_name.constantize }
+
+        before do
+          stub_const(default_factory_class_name, Class.new)
+        end
+
+        it { is_expected.to eq(default_class_name) }
+      end
     end
   end
 end
