@@ -90,6 +90,7 @@ module ActionFactory
     end
 
     def build
+      instance
       run_callbacks :assign_attributes do
         assign_attributes
       end

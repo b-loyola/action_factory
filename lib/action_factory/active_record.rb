@@ -27,7 +27,7 @@ module ActionFactory
     def self.included(base)
       base.extend ClassMethods
       base.class_exec do
-        after_assign_attributes :build_associations
+        before_assign_attributes :build_associations
       end
     end
 
@@ -46,7 +46,7 @@ module ActionFactory
     def build_associations
       self.class.associations.except(*@attributes.keys).each do |name, association|
         associated_record = association.generate(@strategy)
-        @instance.association(name).writer(associated_record)
+        @instance.association(name.to_sym).writer(associated_record)
       end
     end
 
